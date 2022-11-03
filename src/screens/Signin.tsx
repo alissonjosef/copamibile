@@ -6,7 +6,6 @@ import { Fontisto } from "@expo/vector-icons";
 
 export function SignIn() {
   const { signIn, user } = useAuth();
-  console.log("🚀 ~ file: Signin.tsx ~ line 9 ~ SignIn ~ user", user);
   return (
     <Center flex={1} bgColor="gray.900" p={7}>
       <Logo width={212} height={40} />
