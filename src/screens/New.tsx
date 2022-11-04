@@ -24,7 +24,7 @@ export function New() {
       setIsLoading(true);
 
       await api.post('/pools', {
-        title
+        title: title.toUpperCase()
       })
 
       toast.show({
