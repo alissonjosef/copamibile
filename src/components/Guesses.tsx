@@ -1,46 +1,44 @@
-import { Box, FlatList, useToast } from 'native-base';
-import { useEffect, useState } from 'react';
-import { api } from '../services/api';
-import { Game, GameProps } from './Game';
-import { Loading } from './Loading';
-
-
+import { Box, FlatList, useToast } from "native-base";
+import { useEffect, useState } from "react";
+import { api } from "../services/api";
+import { EmptyMyPoolList } from "./EmptyMyPoolList";
+import { Game, GameProps } from "./Game";
+import { Loading } from "./Loading";
 
 interface Props {
   poolId: string;
+  code: string
 }
 
-export function Guesses({ poolId }: Props) {
-
+export function Guesses({ poolId, code }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [games, setGames] = useState<GameProps[]>([]);
-  const [firstTeamScore, setFirstTeamPoints] = useState('');
-  const [secondTeamScore, setSecondTeamPoints] = useState('');
+  const [firstTeamScore, setFirstTeamPoints] = useState("");
+  const [secondTeamScore, setSecondTeamPoints] = useState("");
 
   const toast = useToast();
 
-  async function fetchgame(){
+  async function fetchgame() {
     try {
-      setIsLoading(true)
-      
-      const response = await api.get(`pools/${poolId}/games`)
-      setGames(response.data.games)
+      setIsLoading(true);
 
+      const response = await api.get(`pools/${poolId}/games`);
+      setGames(response.data.games);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast.show({
         title: "Não foi possivel carregar os Jogos",
         placement: "top",
         bgColor: "red.500",
       });
-    } finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   }
 
-  async function handleGuessConfirm(gameId: string){
+  async function handleGuessConfirm(gameId: string) {
     try {
-      if(!firstTeamScore.trim() || !secondTeamScore.trim()){
+      if (!firstTeamScore.trim() || !secondTeamScore.trim()) {
         return toast.show({
           title: "Informe o placar de palpite",
           placement: "top",
@@ -59,10 +57,9 @@ export function Guesses({ poolId }: Props) {
         bgColor: "green.500",
       });
 
-      fetchgame()
-      
+      fetchgame();
     } catch (error) {
-      console.log( error)
+      console.log(error);
 
       toast.show({
         title: "Não foi possivel enviar o palpite",
@@ -73,25 +70,27 @@ export function Guesses({ poolId }: Props) {
   }
 
   useEffect(() => {
-    fetchgame()
-  },[poolId])
+    fetchgame();
+  }, [poolId]);
 
-  if(isLoading){
-    return <Loading />
+  if (isLoading) {
+    return <Loading />;
   }
 
   return (
-      <FlatList
+    <FlatList
       data={games}
-      keyExtractor={item => item.id}
-      renderItem={({item})=> (
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
         <Game
-        data={item}
-        setFirstTeamPoints={setFirstTeamPoints}
-        setSecondTeamPoints={setSecondTeamPoints}
-        onGuessConfirm={() => handleGuessConfirm(item.id)}
+          data={item}
+          setFirstTeamPoints={setFirstTeamPoints}
+          setSecondTeamPoints={setSecondTeamPoints}
+          onGuessConfirm={() => handleGuessConfirm(item.id)}
         />
       )}
-      />
+      _contentContainerStyle={{ pb: 10 }}
+      ListEmptyComponent={() => <EmptyMyPoolList code={code}/>}
+    />
   );
 }
